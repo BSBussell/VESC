@@ -5,10 +5,36 @@
 #include <Servo.h>
 #include <EEPROM.h>
 
+
+class Motor {
+
+  public:
+    Servo serv;
+    int pin;
+    int Update;
+    int Delta;
+    int value;
+    int goal;
+    void refresh() {
+      // Manual Error Detection
+      int error = accelerationGoal - accelerationValue;
+      int sign = abs(error) / error;
+
+      if(error==0) {return;}
+  
+      if (abs(error) > steeringDelta) 
+        steeringAngle += steeringDelta*sign;
+      else 
+        steeringAngle = steeringGoal;
+
+      Steering.write(steeringAngle);
+  
+    }
+}
+
 Servo Steering;
 Servo Acceleration;
 
-int pos = 0;    // variable to store the servo position
 
 int accelerationPin = 10;
 int steeringPin = 9;
@@ -62,17 +88,5 @@ void executeArmingSequence() {
 
 void updateAcceleration() {
 
-  // Manual Error Detection
-  int error = accelerationGoal - accelerationValue;
-  int sign = abs(error) / error;
-
-  if(error==0) {return;}
-  
-  if (abs(error) > steeringDelta) 
-    steeringAngle += steeringDelta*sign;
-  else 
-    steeringAngle = steeringGoal;
-
-  Steering.write(steeringAngle);
   
 }
