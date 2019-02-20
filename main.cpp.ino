@@ -9,60 +9,80 @@
 class Motor {
 
   public:
+    
     Servo serv;
     int pin;
-    int Update;
-    int Delta;
+    int throttle;
+    int delta;
     int value;
     int goal;
+    
+    Motor(int Pin, int Throttle, int Delta, int Value, int Goal){
+        pin = Pin;
+        throttle = Throttle;
+        delta = Delta;
+        value = Value;
+        goal = Goal;
+    }
+    
     void refresh() {
       // Manual Error Detection
-      int error = accelerationGoal - accelerationValue;
+      int error = goal - value;
       int sign = abs(error) / error;
 
       if(error==0) {return;}
   
-      if (abs(error) > steeringDelta) 
-        steeringAngle += steeringDelta*sign;
+      if (abs(error) > delta) 
+        value += delta*sign;
       else 
-        steeringAngle = steeringGoal;
+        value = goal;
 
-      Steering.write(steeringAngle);
+      serv.write(value);
   
     }
-}
+    
+    void startup() {
+      serv.attach(pin);
+    }
+    
+    void executeArmingSequence() {
+      // This loop arms the ESC
+      for (value = 90; value < 100; value += 1) {
+        serv.write(value);
+        delay(150);
+      }
+      serv.write(0);
+    }
 
-Servo Steering;
-Servo Acceleration;
+    int loadServoValue() {
 
+      int val;
+      for ( int address = 0; address < sizeof(int); address++)
+        val = (val + EEPROM.read(address)) << 8;
 
-int accelerationPin = 10;
-int steeringPin = 9;
+      return val;
+    }
 
-// Larger the Number the smoother the movement.
-int accelerationUpdate = 1; // Unused For Now
-int steeringUpdate = 1; // Unused For Now
+    void storeServoValue() {
+      for(int address = 0; address < sizeof(int); address++) {
+        byte val = (servoAngle >> (8*(sizeof(int) - address - 1))) & 255;
+        EEPROM.write(address, val);
+      }
+    }
+};
 
-// Bigger Number results in Jerkier Movement.
-int accelerationDelta = 1;
-int steeringDelta = 1;
+// Motor object(pin, throttle,delta, value, goal)
+Motor Steering(9,1,1,90,90);
+Motor Acceleration(10,1,1,0,10);
 
 unsigned long time;
 unsigned long prevTime;
 
-int accelerationValue = 0;
-int accelerationGoal = 100;
-
-int steeringAngle = 90;
-int steeringGoal = 90;
-
-
-
 void setup() {
-  Steering.attach(steeringPin);
-  Acceleration.attach(accelerationPin);
+  Steering.startup();
+  Acceleration.startup();
 
-  executeArmingSequence();
+  Acceleration.executeArmingSequence();
 
   Serial.begin(9600);
   while(!Serial) {;}
@@ -73,20 +93,10 @@ void loop() {
   time = millis();
 
   if ( prevTime != time ) {
+    Acceleration.refresh();
+    Steering.refresh();
     
   }
-}
 
-void executeArmingSequence() {
-    // This loop arms the ESC
-    for (accelerationValue = 90; accelerationValue < 100; accelerationValue += 1) {
-      Acceleration.write(accelerationValue);
-      delay(150);
-    }
-    Acceleration.write(0);
-}
-
-void updateAcceleration() {
-
-  
+  prevTime = time;
 }
