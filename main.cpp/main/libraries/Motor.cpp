@@ -2,13 +2,8 @@
 // Benjamin S. Bussell
 
 #include "Arduino.h"
-#include <Servo.h>
-
 #include "Motor.h"
-
-Motor::Motor () {
-
-}
+#include <Servo.h>
 
 Motor::~Motor () {
 

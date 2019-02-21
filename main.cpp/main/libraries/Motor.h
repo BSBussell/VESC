@@ -1,12 +1,11 @@
+#ifndef Motor_h
+#define Motor_h
 
-
-#ifndef Servo_h
-#define Servo_h
-
+#include "Arduino.h"
 #include <Servo.h>
 #include <EEPROM.h>
 
-#include "Arduino.h"
+
 
 class Motor {
 
@@ -21,10 +20,9 @@ private:
 
 public:
 
-    Motor(int Pin, int Throttle, int Delta, int Value, int Goal) :
-        pin (Pin), throttle (Throttle), delta (Delta), value (Value), goal (Goal)
-    { }
-
+    Motor(int Pin, int Throttle, int Delta, int Value, int Goal):
+        pin (Pin), throttle (Throttle), delta (Delta), value (Value), goal (Goal){};
+    ~Motor();
     void refresh();
     void startup();
     void executeArmingSequence();
