@@ -2,6 +2,10 @@
 // Benjamin S. Bussell
 // February 26, 2019
 
+// If having trouble with the code submit an issue here:
+// https://github.com/BSBussell/VESC
+
+
 #include "Arduino.h"
 #include <Servo.h>
 #include <EEPROM.h>
@@ -10,7 +14,7 @@
 // Custom Library made to abstract the code helping readability.
 // Can be found in Motor folder
 // If modified needs to be recompiled from Sketch>Include Library>Add .ZIP Library
-// Might need to rename the folder, just add one version number to the name. 
+// Might need to rename the folder, just add one version number to the name.
 
 
 
@@ -22,7 +26,7 @@ Motor Acceleration(10,1,1,0,10);
 unsigned long time;
 unsigned long prevTime;
 
-// if you're new to arduino this code runs before the loop. 
+// if you're new to arduino this code runs before the loop.
 // Any setup needs to happen here
 // I initalized variable above so that they are included in the Global scope
 void setup() {
@@ -53,7 +57,7 @@ void loop() {
     // Syncs the physical motor with the variables
     Acceleration.refresh();
     Steering.refresh();
-    
+
   }
 
   // Check for inputs from pyton.
@@ -67,14 +71,14 @@ void loop() {
 
     // Instruction naming scheme uses the same as the other group to retain
     // Compability between the two Arduino's.
-    
+
     if (instruction == 'T') {
       Acceleration.setGoal(argument);
     }
     else if (instruction == 'S') {
       Steering.setGoal(argument);
     }
-    
+
   }
 
   // Set finish time for use above.
