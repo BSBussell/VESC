@@ -1,5 +1,6 @@
 
 // Benjamin S. Bussell
+// February 26, 2019
 
 #include "Arduino.h"
 #include "Motor.h"
@@ -36,6 +37,12 @@ void Motor::executeArmingSequence() {
       delay(150);
     }
     serv.write(0);
+}
+
+void Motor::setGoal( unsigned int argument) {
+  // TODO: Implement Error Checking to prevent from inappropriate Arguments
+  //       Ex: if argument is out of range of motors or something dumb.
+  goal = argument;
 }
 
 int Motor::loadServoValue() {
