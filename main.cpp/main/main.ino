@@ -53,7 +53,7 @@ void loop() {
 
   // Make sure time has passed since last loop, to prevent weird stacking issues
   if ( prevTime != time ) {
-
+    
     // Syncs the physical motor with the variables
     Acceleration.refresh();
     Steering.refresh();
@@ -71,12 +71,19 @@ void loop() {
 
     // Instruction naming scheme uses the same as the other group to retain
     // Compability between the two Arduino's.
-
+    
+    
+    
     if (instruction == 'T') {
+      
       Acceleration.setGoal(argument);
     }
     else if (instruction == 'S') {
-      Steering.setGoal(argument);
+
+      if (argument <= 180) {
+        
+        Steering.setGoal(argument);
+      }
     }
 
   }
