@@ -80,10 +80,9 @@ void loop() {
     }
     else if (instruction == 'S') {
 
-      if (argument <= 180) {
         
         Steering.setGoal(argument);
-      }
+      
     }
 
   }
