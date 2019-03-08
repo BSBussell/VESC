@@ -71,18 +71,24 @@ void loop() {
 
     // Instruction naming scheme uses the same as the other group to retain
     // Compability between the two Arduino's.
-    
+    // 3/6/2019 - Added lower case for changing Delta with the Arduino
     
     
     if (instruction == 'T') {
       
       Acceleration.setGoal(argument);
+    } 
+    else if (instruction == 't') {
+      
+      Acceleration.setDelta(argument);
     }
     else if (instruction == 'S') {
+  
+      Steering.setGoal(argument);
+    } 
+    else if (instruction == 's') {
 
-        
-        Steering.setGoal(argument);
-      
+      Steering.setDelta(argument);
     }
 
   }
