@@ -33,7 +33,7 @@ void setup() {
 
   // Initalize the motors.
   Steering.startup();
-  Acceleration.startup();
+  Acceleration.startup(true);
 
   // For some reason needed to make sure the Acceleration motor is working
   Acceleration.executeArmingSequence();

@@ -17,17 +17,17 @@ private:
   Servo serv;
   int pin;
   int throttle;
-  double delta;
-  double value;
-  double goal;
+  int delta;
+  int value;
+  int goal;
 
 public:
 
     Motor(int Pin, int Throttle, int Delta, int Value, int Goal):
-        pin (Pin), throttle (Throttle), delta (double(Delta)), value (double(Value)), goal (double(Goal)){};
+        pin (Pin), throttle (Throttle), delta ( Delta), value ( Value), goal ( Goal){};
     ~Motor();
     void refresh();
-    void startup();
+    void startup( bool accel);
     void executeArmingSequence();
 
     void setGoal(unsigned int argument);

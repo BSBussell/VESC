@@ -12,8 +12,8 @@ Motor::~Motor () {
 
 void Motor::refresh() {
     // Manual Error Detection
-    double error = goal - value;
-    double sign = abs(error) / error;
+    int error = goal - value;
+    int sign = abs(error) / error;
 
     if (error == 0 ) { return;}
 
@@ -26,8 +26,14 @@ void Motor::refresh() {
 
 }
 
-void Motor::startup() {
-     serv.attach(pin);
+void Motor::startup(bool accel = false) {
+    // Special Conditions if the Motor is for Acceleration
+    if (accel) {
+      // Gives bigger margin for acceleratior
+      serv.attach(pin, 200, 2000);
+    } else {
+      serv.attatch(pin);
+    }
 }
 
 void Motor::executeArmingSequence() {
@@ -42,15 +48,15 @@ void Motor::executeArmingSequence() {
 void Motor::setGoal( unsigned int argument) {
   // TODO: Implement Error Checking to prevent from inappropriate Arguments
   //       Ex: if argument is out of range of motors or something dumb.
-  goal = double(argument);
+  goal = argument;
 }
 
 void Motor::setDelta( unsigned int value) {
 
-  delta = double(value)/100;
-  Serial.print(delta);
+  delta = value;
+  //Serial.print(delta);
 }
-/*
+
 int Motor::loadServoValue() {
     int val;
     for ( int address = 0; address < sizeof(int); address++)
@@ -64,4 +70,4 @@ void Motor::storeServoValue() {
     byte val = (value >> (8*(sizeof(int) - address - 1))) & 255;
     EEPROM.write(address, val);
   }
-}*/
+}
