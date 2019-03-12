@@ -1,4 +1,5 @@
 
+
 // Benjamin S. Bussell
 // February 26, 2019
 
@@ -19,8 +20,8 @@
 
 
 // Motor object(pin, throttle,delta, value, goal)
-Motor Steering(9,1,1,90,90);
-Motor Acceleration(10,1,1,0,10);
+Motor Steering(9, 1, 1, 90, 90);
+Motor Acceleration(10, 1, 1, 0, 10);
 
 // For keeping track of updates
 unsigned long time;
@@ -32,7 +33,7 @@ unsigned long prevTime;
 void setup() {
 
   // Initalize the motors.
-  Steering.startup();
+  Steering.startup(false);
   Acceleration.startup(true);
 
   // For some reason needed to make sure the Acceleration motor is working
@@ -40,7 +41,9 @@ void setup() {
 
   // Initalize ports and make sure they are working, code will not run until they do
   Serial.begin(9600);
-  while(!Serial) {;}
+  while (!Serial) {
+    ;
+  }
 
 }
 
@@ -53,7 +56,7 @@ void loop() {
 
   // Make sure time has passed since last loop, to prevent weird stacking issues
   if ( prevTime != time ) {
-    
+
     // Syncs the physical motor with the variables
     Acceleration.refresh();
     Steering.refresh();
@@ -64,28 +67,30 @@ void loop() {
   if (Serial.available() > 1) {
 
     // Byte 1 - Instruction
-    // Byte 2 - Argument
+    // Byte 2 - High Value
+    // Byte 3 - Low Value
     // Read the IO Port
+    
     char instruction = Serial.read();
-    unsigned int argument = Serial.read();
-
+    unsigned int argument = Serial.parseInt();
+    Serial.println(argument);
     // Instruction naming scheme uses the same as the other group to retain
     // Compability between the two Arduino's.
     // 3/6/2019 - Added lower case for changing Delta with the Arduino
-    
-    
+
+
     if (instruction == 'T') {
-      
-      Acceleration.setGoal(argument);
-    } 
+
+      //Acceleration.setGoal(argument);
+    }
     else if (instruction == 't') {
-      
+
       Acceleration.setDelta(argument);
     }
     else if (instruction == 'S') {
-  
+
       Steering.setGoal(argument);
-    } 
+    }
     else if (instruction == 's') {
 
       Steering.setDelta(argument);
@@ -95,4 +100,12 @@ void loop() {
 
   // Set finish time for use above.
   prevTime = time;
+}
+
+int parseBytes() {
+  
+  byte high = Serial.read();
+  byte low  = Serial.read();
+  
+  return high << 8 + low;
 }

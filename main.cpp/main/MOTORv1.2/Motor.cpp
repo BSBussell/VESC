@@ -32,7 +32,7 @@ void Motor::startup(bool accel = false) {
       // Gives bigger margin for acceleratior
       serv.attach(pin, 200, 2000);
     } else {
-      serv.attatch(pin);
+      serv.attach(pin);
     }
 }
 
