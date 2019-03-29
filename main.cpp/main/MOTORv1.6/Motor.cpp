@@ -22,18 +22,17 @@ void Motor::refresh() {
     else
       value = goal;
 
-    serv.write(value);
+    if (!angleBased)  
+      serv.writeMicroseconds(value);
+    else
+      serv.write(value);
 
 }
 
-void Motor::startup(bool accel = false) {
-    // Special Conditions if the Motor is for Acceleration
-    if (accel) {
-      // Gives bigger margin for acceleratior
-      serv.attach(pin, 200, 2000);
-    } else {
-      serv.attach(pin);
-    }
+void Motor::startup() {
+    
+    serv.attach(pin);
+    
 }
 
 void Motor::executeArmingSequence() {
@@ -42,7 +41,10 @@ void Motor::executeArmingSequence() {
       serv.write(value);
       delay(150);
     }
-    //serv.write(0);
+
+    serv.attach(pin, 0, 2000);
+    
+    angleBased = false;
 }
 
 void Motor::setGoal( unsigned int argument) {
@@ -70,4 +72,13 @@ void Motor::storeServoValue() {
     byte val = (value >> (8*(sizeof(int) - address - 1))) & 255;
     EEPROM.write(address, val);
   }
+}
+
+unsigned int Motor::readPhysical() {
+
+  if (!angleBased)
+    return serv.readMicroseconds();
+  else
+    return serv.read();
+
 }

@@ -21,17 +21,21 @@ private:
   int value;
   int goal;
 
+  bool angleBased = true;
+
 public:
 
     Motor(int Pin, int Throttle, int Delta, int Value, int Goal):
         pin (Pin), throttle (Throttle), delta ( Delta), value ( Value), goal ( Goal){};
     ~Motor();
     void refresh();
-    void startup( bool accel);
+    void startup();
     void executeArmingSequence();
 
     void setGoal(unsigned int argument);
     void setDelta(unsigned int value);
+
+    unsigned int readPhysical();
 
     int loadServoValue();
     void storeServoValue();

@@ -14,7 +14,7 @@
 #include <Motor.h>
 // Custom Library made to abstract the code helping readability.
 // Can be found in Motor folder
-// If modified needs to be recompiled from Sketch>Include Library>Add .ZIP Library
+// If modified needs to be recompiled from Sketch > Include Library > Add .ZIP Library
 // Might need to rename the folder, just add one version number to the name.
 
 
@@ -33,14 +33,15 @@ unsigned long prevTime;
 void setup() {
 
   // Initalize the motors.
-  Steering.startup(false);
-  Acceleration.startup(true);
+  Steering.startup();
+  Acceleration.startup();
 
   // For some reason needed to make sure the Acceleration motor is working
   Acceleration.executeArmingSequence();
 
   // Initalize ports and make sure they are working, code will not run until they do
   Serial.begin(9600);
+  
   while (!Serial) {
     ;
   }
@@ -63,8 +64,8 @@ void loop() {
 
   }
 
-  // Check for inputs from pyton.
-  if (Serial.available() > 1) {
+  // Check for inputs from python.
+  if (Serial.available() > 2) {
 
     // Byte 1 - Instruction
     // Byte 2 - High Value
@@ -72,29 +73,26 @@ void loop() {
     // Read the IO Port
     
     char instruction = Serial.read();
-    unsigned int argument = Serial.parseInt();
-    Serial.println(argument);
-    // Instruction naming scheme uses the same as the other group to retain
-    // Compability between the two Arduino's.
+    unsigned int argument = parseBytes(); // Parse Bytes reads the two bytes sent and merges them to a 16 bit int
+    
     // 3/6/2019 - Added lower case for changing Delta with the Arduino
-
-
-    if (instruction == 'T') {
-
-      //Acceleration.setGoal(argument);
-    }
-    else if (instruction == 't') {
-
+    
+    if (instruction == 'T')
+      Acceleration.setGoal(argument);
+    else if (instruction == 't') 
       Acceleration.setDelta(argument);
-    }
-    else if (instruction == 'S') {
-
+    
+    else if (instruction == 'S') 
       Steering.setGoal(argument);
-    }
-    else if (instruction == 's') {
-
+    
+    else if (instruction == 's') 
       Steering.setDelta(argument);
-    }
+    
+    else if (instruction == 'R')
+      Serial.println(Acceleration.readPhysical());
+    
+    else if (instruction == 'r') 
+      Serial.println(Steering.readPhysical());
 
   }
 
@@ -107,5 +105,5 @@ int parseBytes() {
   byte high = Serial.read();
   byte low  = Serial.read();
   
-  return high << 8 + low;
+  return high * 256 + low;
 }
