@@ -11,7 +11,7 @@ Motor::~Motor () {
 }
 
 void Motor::refresh() {
-    // Manual Error Detection
+    // Smoothing with Deltas to prevent sudden increase
     int error = goal - value;
     int sign = abs(error) / error;
 

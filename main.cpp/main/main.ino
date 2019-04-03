@@ -57,11 +57,11 @@ void loop() {
 
   // Make sure time has passed since last loop, to prevent weird stacking issues
   if ( prevTime != time ) {
-
+    
     // Syncs the physical motor with the variables
     Acceleration.refresh();
     Steering.refresh();
-
+    prevTime = time;
   }
 
   // Check for inputs from python.
@@ -97,7 +97,7 @@ void loop() {
   }
 
   // Set finish time for use above.
-  prevTime = time;
+  
 }
 
 int parseBytes() {
