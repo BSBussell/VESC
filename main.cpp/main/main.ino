@@ -1,5 +1,3 @@
-
-
 // Benjamin S. Bussell
 // February 26, 2019
 
@@ -25,10 +23,8 @@
 #define LSM9DS1_M   0x1E // Would be 0x1C if SDO_M is LOW
 #define LSM9DS1_AG  0x6B // Would be 0x6A if SDO_AG is LOW
 
-// Red wire goes to GND
-// Yellow Wire goes to 3.3v
-// Green Goes to A4
-// Blue goes to A5
+// Applies to wires going from the red IMU
+// If you need help with wiring see the file in the folder.
 
 // IMU Constructor
 LSM9DS1 imu;
@@ -59,14 +55,14 @@ void setup() {
   // Initalize the IMU
   if (!imu.begin()) {
     Serial.println("Failed to communicate with LSM9DS1.");
-    Serial.println("Returned Values will now All be 0");
+    Serial.println("Returned Values will now All be n");
     imuSuccess = false;
   } else {
+    
     imu.settings.accel.scale = 16; // Set accel range to +/-16g
     imu.settings.gyro.scale = 2000; // Set gyro range to +/-2000dps
     imu.settings.mag.scale = 8; // Set mag range to +/-8Gs
     imu.begin(); // Call begin to update the sensor's new settings
-
   }
 
   
@@ -135,25 +131,39 @@ void loop() {
         Serial.println(Steering.readPhysical());
         break;
       case 'G':
-        imu.readGyro();
-        Serial.println(imu.calcGyro(imu.gx));
-        Serial.println(imu.calcGyro(imu.gy));
-        Serial.println(imu.calcGyro(imu.gz));
+        if imuSuccess {
+          imu.readGyro();
+          Serial.println(imu.calcGyro(imu.gx));
+          Serial.println(imu.calcGyro(imu.gy));
+          Serial.println(imu.calcGyro(imu.gz));
+        } else {
+          Serial.print("N\nN\nN\n")
+        }
         break;
       case 'A':
-        imu.readAccel();
-        Serial.println(imu.calcAccel(imu.ax));
-        Serial.println(imu.calcAccel(imu.ay));
-        Serial.println(imu.calcAccel(imu.az));
+        if imuSuccess {
+          imu.readAccel();
+          Serial.println(imu.calcAccel(imu.ax));
+          Serial.println(imu.calcAccel(imu.ay));
+          Serial.println(imu.calcAccel(imu.az));
+        } else {
+          Serial.print("N\nN\nN\n")
+        }
         break;
       case 'M':
-        imu.readMag();
-        Serial.println(imu.calcMag(imu.mx));
-        Serial.println(imu.calcMag(imu.my));
-        Serial.println(imu.calcMag(imu.mz));
+        if imuSuccess {
+          imu.readMag();
+          Serial.println(imu.calcMag(imu.mx));
+          Serial.println(imu.calcMag(imu.my));
+          Serial.println(imu.calcMag(imu.mz));
+        } else {
+          Serial.print("N\nN\nN\n")
+        }
         break;
       case 'C':
         imu.calibrate(true);
+        break;
+      default:
         break;
     }
 
