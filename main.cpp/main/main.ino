@@ -1,5 +1,3 @@
-
-
 // Benjamin S. Bussell
 // February 26, 2019
 
@@ -17,11 +15,28 @@
 // If modified needs to be recompiled from Sketch > Include Library > Add .ZIP Library
 // Might need to rename the folder, just add one version number to the name.
 
+#include <SPI.h> // SparkFun IMU
+#include <Wire.h> // SparkFun IMU
+#include <SparkFunLSM9DS1.h> // SparkFun IMU
+
+// SDO_XM and SDO_G are both pulled high, so our addresses are:
+#define LSM9DS1_M   0x1E // Would be 0x1C if SDO_M is LOW
+#define LSM9DS1_AG  0x6B // Would be 0x6A if SDO_AG is LOW
+
+// Applies to wires going from the red IMU
+// If you need help with wiring see the file in the folder.
+
+// IMU Constructor
+LSM9DS1 imu;
 
 
 // Motor object(pin, throttle,delta, value, goal)
 Motor Steering(9, 1, 1, 90, 90);
 Motor Acceleration(10, 1, 1, 0, 10);
+
+
+
+bool imuSuccess = true;
 
 // For keeping track of updates
 unsigned long time;
@@ -32,6 +47,25 @@ unsigned long prevTime;
 // I initalized variable above so that they are included in the Global scope
 void setup() {
 
+  // Configure Settings for how IMU is wired.
+  imu.settings.device.commInterface = IMU_MODE_I2C; // Set mode to I2C
+  imu.settings.device.mAddress = LSM9DS1_M; // Set mag address to 0x1E
+  imu.settings.device.agAddress = LSM9DS1_AG; // Set ag address to 0x6B
+  
+  // Initalize the IMU
+  if (!imu.begin()) {
+    Serial.println("Failed to communicate with LSM9DS1.");
+    Serial.println("Returned Values will now All be n");
+    imuSuccess = false;
+  } else {
+    
+    imu.settings.accel.scale = 16; // Set accel range to +/-16g
+    imu.settings.gyro.scale = 2000; // Set gyro range to +/-2000dps
+    imu.settings.mag.scale = 8; // Set mag range to +/-8Gs
+    imu.begin(); // Call begin to update the sensor's new settings
+  }
+
+  
   // Initalize the motors.
   Steering.startup();
   Acceleration.startup();
@@ -77,25 +111,64 @@ void loop() {
     
     // 3/6/2019 - Added lower case for changing Delta with the Arduino
     
-    if (instruction == 'T')
-      Acceleration.setGoal(argument);
-    else if (instruction == 't') 
-      Acceleration.setDelta(argument);
-    
-    else if (instruction == 'S') 
-      Steering.setGoal(argument);
-    
-    else if (instruction == 's') 
-      Steering.setDelta(argument);
-    
-    else if (instruction == 'R')
-      Serial.println(Acceleration.readPhysical());
-    
-    else if (instruction == 'r') 
-      Serial.println(Steering.readPhysical());
+    switch(instruction) {
+      case 'T':
+        Acceleration.setGoal(argument);
+      
+      case 't': 
+        Acceleration.setDelta(argument);
+        break;
+      case 'S':
+        Steering.setGoal(argument);
+        break;
+      case 's':
+        Steering.setDelta(argument);
+         break;
+      case 'R':
+        Serial.println(Acceleration.readPhysical());
+        break;
+      case 'r':
+        Serial.println(Steering.readPhysical());
+        break;
+      case 'G':
+        if imuSuccess {
+          imu.readGyro();
+          Serial.println(imu.calcGyro(imu.gx));
+          Serial.println(imu.calcGyro(imu.gy));
+          Serial.println(imu.calcGyro(imu.gz));
+        } else {
+          Serial.print("N\nN\nN\n")
+        }
+        break;
+      case 'A':
+        if imuSuccess {
+          imu.readAccel();
+          Serial.println(imu.calcAccel(imu.ax));
+          Serial.println(imu.calcAccel(imu.ay));
+          Serial.println(imu.calcAccel(imu.az));
+        } else {
+          Serial.print("N\nN\nN\n")
+        }
+        break;
+      case 'M':
+        if imuSuccess {
+          imu.readMag();
+          Serial.println(imu.calcMag(imu.mx));
+          Serial.println(imu.calcMag(imu.my));
+          Serial.println(imu.calcMag(imu.mz));
+        } else {
+          Serial.print("N\nN\nN\n")
+        }
+        break;
+      case 'C':
+        imu.calibrate(true);
+        break;
+      default:
+        break;
+    }
 
   }
-
+  
   // Set finish time for use above.
   
 }
